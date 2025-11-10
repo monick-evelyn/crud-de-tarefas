@@ -1,4 +1,5 @@
 import { buildRoutePath } from "./utils/build-route-path.js"
+import {randomUUID} from 'node:crypto'
 
 export const routes = [
     {
@@ -7,7 +8,7 @@ export const routes = [
         handler: (req, res) => {
             const {title, description} = req.body;
             const task = {
-                id: '1',
+                id: randomUUID(),
                 title,
                 description,
                 completed_at: null,
