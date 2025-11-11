@@ -1,7 +1,7 @@
 import { buildRoutePath } from "./utils/build-route-path.js"
 import {randomUUID} from 'node:crypto'
 
-const tasks = []
+let tasks = []
 export const routes = [
     {
         method: 'POST',
@@ -25,6 +25,11 @@ export const routes = [
         method: 'GET',
         path: buildRoutePath('/tasks'),
         handler: (req, res) => {
+            const {title} = req.query;
+            if (title) {
+                tasks = tasks.filter(task => task.title === title);
+                console.log(tasks);
+            }
             return res
                 .setHeader('Content-type', 'aplication/json')
                 .end(JSON.stringify(tasks))
