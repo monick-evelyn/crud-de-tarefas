@@ -2,6 +2,7 @@ import { buildRoutePath } from "./utils/build-route-path.js"
 import {randomUUID} from 'node:crypto'
 
 let tasks = []
+let tasksfiltered = [];
 export const routes = [
     {
         method: 'POST',
@@ -25,14 +26,21 @@ export const routes = [
         method: 'GET',
         path: buildRoutePath('/tasks'),
         handler: (req, res) => {
-            const {title} = req.query;
-            if (title) {
-                tasks = tasks.filter(task => task.title === title);
-                console.log(tasks);
-            }
-            return res
+            const {title, description} = req.query;
+            if (title && description) {
+                tasksfiltered = tasks.filter(task => task.title === title && task.description === description);
+                console.log(tasksfiltered);
+                return res
                 .setHeader('Content-type', 'aplication/json')
-                .end(JSON.stringify(tasks))
+                .end(JSON.stringify(tasksfiltered))
+            } else if ((title && !description) || (!title && description)){
+                return res
+                    .writeHead(400) //bad request
+                    .end('Por favor, insira title e description para pesquisar!');
+            } else {
+                return res
+                    .end(JSON.stringify(tasks))
+            }
         }
     },
 ]
