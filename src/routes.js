@@ -1,5 +1,6 @@
 import { buildRoutePath } from "./utils/build-route-path.js"
 import {randomUUID} from 'node:crypto'
+import {StatusCodes} from 'http-status-codes'
 
 let tasks = []
 let tasksfiltered = [];
@@ -19,7 +20,9 @@ export const routes = [
             })
             console.log(tasks);
             //tasks.push(task);
-            return res.writeHead(201).end('Tarefa criada com sucesso!');
+            return res
+                .writeHead(StatusCodes.CREATED)
+                .end('Tarefa criada com sucesso!');
         }
     },
     {
@@ -32,15 +35,16 @@ export const routes = [
                 console.log(tasksfiltered);
                 return res
                     .setHeader('Content-type', 'aplication/json')
+                    .writeHead(StatusCodes.OK)
                     .end(JSON.stringify(tasksfiltered))
             } 
             if ((title && !description) || (!title && description)){
                 return res
-                    .writeHead(400) //bad request
+                    .writeHead(StatusCodes.BAD_REQUEST) //bad request
                     .end('Por favor, insira title e description para pesquisar!');
             } 
             return res
-                .writeHead(200)
+                .writeHead(StatusCodes.OK)
                 .end(JSON.stringify(tasks))
         }
     },
@@ -57,15 +61,15 @@ export const routes = [
                     tasks[index].title = title;
                     tasks[index].description = description;
                     return res
-                        .writeHead(200)
+                        .writeHead(StatusCodes.OK)
                         .end('Mudança realizada com sucesso!')
                 }
                 return res
-                    .writeHead(400)
+                    .writeHead(StatusCodes.BAD_REQUEST)
                     .end('Sem dados para modificar.')
             }
             return res
-                .writeHead(404)
+                .writeHead(StatusCodes.NOT_FOUND)
                 .end(`Não existe tarefa com o id ${id}`);
         }
     },
@@ -79,11 +83,11 @@ export const routes = [
             if (index > -1) {
                 tasks.pop(index);
                 return res
-                    .writeHead(200)
+                    .writeHead(StatusCodes.OK)
                     .end('Task deletada com sucesso')
             }
             return res
-                .writeHead(404)
+                .writeHead(StatusCodes.NOT_FOUND)
                 .end(`Não existe tarefa com o id ${id}`);
         }
     },
@@ -97,11 +101,11 @@ export const routes = [
             if (index > -1) {
                 tasks[index].completed_at = new Date();
                 return res
-                    .writeHead(200)
+                    .writeHead(StatusCodes.OK)
                     .end(JSON.stringify(tasks));
             }
             return res
-                .writeHead(404)
+                .writeHead(StatusCodes.BAD_REQUEST)
                 .end(`Não existe tarefa com o id ${id}`);
         }
     }
