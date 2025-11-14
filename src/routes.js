@@ -86,5 +86,23 @@ export const routes = [
                 .writeHead(404)
                 .end(`Não existe tarefa com o id ${id}`);
         }
+    },
+    {
+        method: 'PATCH',
+        path: buildRoutePath('/tasks/:id/complete'),
+        handler: (req, res) => {
+            const {id} = req.params;
+            const index = tasks.findIndex(task => task.id === id);
+
+            if (index > -1) {
+                tasks[index].completed_at = new Date();
+                return res
+                    .writeHead(200)
+                    .end(JSON.stringify(tasks));
+            }
+            return res
+                .writeHead(404)
+                .end(`Não existe tarefa com o id ${id}`);
+        }
     }
 ]
