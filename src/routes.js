@@ -9,7 +9,8 @@ export const routes = [
         method: 'POST',
         path: buildRoutePath('/tasks'),
         handler: (req, res) => {
-            const {title, description} = req.body;
+            if (req.body) {
+                const {title, description} = req.body;
             if (title && description) {
                     tasks.push({
                     id: randomUUID(),
@@ -29,6 +30,11 @@ export const routes = [
                 .writeHead(StatusCodes.BAD_REQUEST)
                 .end('Por favor, insira title e description para criar task')
         }
+        return res
+                .writeHead(StatusCodes.BAD_REQUEST)
+                .end('Por favor, insira um body na requisição!')
+            }
+            
     },
     {
         method: 'GET',
@@ -60,18 +66,37 @@ export const routes = [
             const {id} = req.params;
             const index = tasks.findIndex(task => task.id === id);
             if (index > -1) {
-                try {
+                if (req.body) {
                     const {title, description} = req.body;
+                if (title && description) {
                     tasks[index].title = title;
                     tasks[index].description = description;
                     return res
                         .writeHead(StatusCodes.OK)
-                        .end('Mudança realizada com sucesso!')
-                } catch (error) {
-                    return res
-                    .writeHead(StatusCodes.BAD_REQUEST)
-                    .end('Sem dados para modificar, por favor insira title e description')
+                        .end('Mudança realizada com sucesso!');
                 }
+                    
+                if (title && !description) {
+                    tasks[index].title = title;
+                    return res
+                        .writeHead(StatusCodes.OK)
+                        .end('Mudança realizada com sucesso!')
+                }
+
+                if (!title && description) {
+                    tasks[index].description = description;
+                    return res
+                        .writeHead(StatusCodes.OK)
+                        .end('Mudança realizada com sucesso!');
+                }
+                return res
+                .writeHead(StatusCodes.BAD_REQUEST)
+                .end('Sem dados para modificar, por favor insira title ou description')
+                }
+                
+                return res
+                .writeHead(StatusCodes.BAD_REQUEST)
+                .end('Por favor, insira um body na requisição!')
             }
             return res
                 .writeHead(StatusCodes.NOT_FOUND)
