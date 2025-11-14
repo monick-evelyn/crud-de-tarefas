@@ -52,21 +52,21 @@ export const routes = [
         method: 'PUT',
         path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
-            const {title, description} = req.body;
             const {id} = req.params;
             const index = tasks.findIndex(task => task.id === id);
-            
             if (index > -1) {
-                if (title || description) {
+                try {
+                    const {title, description} = req.body;
                     tasks[index].title = title;
                     tasks[index].description = description;
                     return res
                         .writeHead(StatusCodes.OK)
                         .end('Mudança realizada com sucesso!')
-                }
-                return res
+                } catch (error) {
+                    return res
                     .writeHead(StatusCodes.BAD_REQUEST)
-                    .end('Sem dados para modificar.')
+                    .end('Sem dados para modificar, por favor insira title e description')
+                }
             }
             return res
                 .writeHead(StatusCodes.NOT_FOUND)
