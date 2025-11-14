@@ -10,19 +10,24 @@ export const routes = [
         path: buildRoutePath('/tasks'),
         handler: (req, res) => {
             const {title, description} = req.body;
-            tasks.push({
-                id: randomUUID(),
-                title,
-                description,
-                completed_at: null,
-                created_at: new Date(),
-                updated_at: new Date()
-            })
-            console.log(tasks);
-            //tasks.push(task);
+            if (title && description) {
+                    tasks.push({
+                    id: randomUUID(),
+                    title,
+                    description,
+                    completed_at: null,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                })
+                console.log(tasks);
+                //tasks.push(task);
+                return res
+                    .writeHead(StatusCodes.CREATED)
+                    .end('Tarefa criada com sucesso!');
+                }
             return res
-                .writeHead(StatusCodes.CREATED)
-                .end('Tarefa criada com sucesso!');
+                .writeHead(StatusCodes.BAD_REQUEST)
+                .end('Por favor, insira title e description para criar task')
         }
     },
     {
