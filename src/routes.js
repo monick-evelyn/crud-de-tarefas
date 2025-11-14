@@ -68,5 +68,23 @@ export const routes = [
                 .writeHead(404)
                 .end(`Não existe tarefa com o id ${id}`);
         }
+    },
+    {
+        method: 'DELETE',
+        path: buildRoutePath('/tasks/:id'),
+        handler: (req, res) => {
+            const {id} = req.params;
+            const index = tasks.findIndex(task => task.id === id);
+
+            if (index > -1) {
+                tasks.pop(index);
+                return res
+                    .writeHead(200)
+                    .end('Task deletada com sucesso')
+            }
+            return res
+                .writeHead(404)
+                .end(`Não existe tarefa com o id ${id}`);
+        }
     }
 ]
