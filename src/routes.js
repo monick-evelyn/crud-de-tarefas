@@ -2,6 +2,7 @@ import { buildRoutePath } from "./utils/build-route-path.js";
 import { randomUUID } from "node:crypto";
 import { StatusCodes } from "http-status-codes";
 import { Database } from "./database.js";
+import { CLIENT_RENEG_WINDOW } from "node:tls";
 
 const database = new Database();
 
@@ -67,37 +68,36 @@ export const routes = [
         method: "PUT",
         path: buildRoutePath("/tasks/:id"),
         handler: (req, res) => {
-            const { id } = req.params;
-            const index = tasks.findIndex((task) => task.id === id);
-            if (index > -1) {
+            const id = req.params.id;
+            const row = database.selectById("tasks", id);
+            console.log(`Row: ${row}`);
+            //const index = tasks.findIndex((task) => task.id === id);
+            if (row > -1) {
                 if (req.body) {
                     const { title, description } = req.body;
                     if (title && description) {
-                        tasks[index].title = title;
-                        tasks[index].description = description;
+                        database.update("tasks", id, { title, description });
                         return res
                             .writeHead(StatusCodes.OK)
                             .end("Mudança realizada com sucesso!");
                     }
 
                     if (title && !description) {
-                        tasks[index].title = title;
+                        database.update("tasks", id, { title });
                         return res
                             .writeHead(StatusCodes.OK)
                             .end("Mudança realizada com sucesso!");
                     }
 
                     if (!title && description) {
-                        tasks[index].description = description;
+                        database.update("tasks", id, { description });
                         return res
                             .writeHead(StatusCodes.OK)
                             .end("Mudança realizada com sucesso!");
                     }
                     return res
                         .writeHead(StatusCodes.BAD_REQUEST)
-                        .end(
-                            "Sem dados para modificar, por favor insira title ou description"
-                        );
+                        .end("Sem dados para modificar, por favor insira title ou description");
                 }
 
                 return res

@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { title } from 'node:process';
 
 const databasePath = new URL('../db.json', import.meta.url);
 
@@ -49,11 +50,48 @@ export class Database {
     }
 
     update (table, id, data) { 
-        const rowIndex = this.#database[table].findIndex(row => row.id === id); 
+        const row = this.selectById(table, id);
 
-        if (rowIndex > -1) {
-            this.#database[table][rowIndex] = { id, ...data };
-            this.#persist(); 
+        // Garantir que `data` seja um objeto. Se vier como string JSON, tentar parsear.
+        let updateData = data;
+        if (typeof updateData === 'string') {
+            try {
+                updateData = JSON.parse(updateData);
+            } catch (e) {
+                updateData = {};
+            }
         }
+
+        console.log('Update data:', updateData);
+
+        if (row > -1) {
+            const existing = this.#database[table][row];
+
+            const hasTitle = Object.prototype
+            .hasOwnProperty.call(updateData, 'title') && 
+            typeof updateData.title === 'string' && 
+            updateData.title.trim() !== '';
+            
+            const hasDescription = Object.prototype
+                .hasOwnProperty.call(updateData, 'description') && 
+                typeof updateData.description === 'string' && 
+                updateData.description.trim() !== '';
+
+            this.#database[table][row] = {
+                id,
+                title: hasTitle ? updateData.title : existing.title,
+                description: hasDescription ? updateData.description : existing.description,
+                completed_at: existing.completed_at,
+                created_at: existing.created_at,
+                updated_at: new Date()
+            };
+
+            this.#persist();
+        }
+    }
+
+    selectById (table, id) { 
+        const rowIndex = this.#database[table].findIndex(row => row.id === id); 
+        return rowIndex;
     }
 }
