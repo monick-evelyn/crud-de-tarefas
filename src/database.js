@@ -90,8 +90,26 @@ export class Database {
         }
     }
 
+    updateTaskCompleted (table, id) {
+        const indexRow = this.selectById(table, id);
+
+        if (indexRow > -1) {
+            const existing = this.#database[table][indexRow];
+            this.#database[table][indexRow] = {
+                id,
+                title: existing.title,
+                description: existing.description,
+                completed_at: new Date(),
+                created_at: existing.created_at,
+                updated_at: existing.updated_at
+            };
+            this.#persist();
+        }
+    }
+
     selectById (table, id) { 
-        const rowIndex = this.#database[table].findIndex(row => row.id === id); 
+        const tableData = this.#database[table] ?? [];
+        const rowIndex = tableData.findIndex(row => row.id === id);
         return rowIndex;
     }
 }

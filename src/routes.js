@@ -115,12 +115,14 @@ export const routes = [
         handler: (req, res) => {
             const {id} = req.params;
             //const index = tasks.findIndex((task) => task.id === id);
-            const index = database.selectById("tasks", id)
+            const index = database.selectById("tasks", id);
 
             if (index > -1) {
                 //tasks.pop(index);
                 database.delete("tasks", id);
-                return res.writeHead(StatusCodes.OK).end("Task deletada com sucesso!");
+                return res
+                    .writeHead(StatusCodes.OK)
+                    .end("Task deletada com sucesso!");
             }
             return res
                 .writeHead(StatusCodes.NOT_FOUND)
@@ -132,11 +134,14 @@ export const routes = [
         path: buildRoutePath("/tasks/:id/complete"),
         handler: (req, res) => {
             const { id } = req.params;
-            const index = tasks.findIndex((task) => task.id === id);
+            const index = database.selectById("tasks", id)
 
             if (index > -1) {
-                tasks[index].completed_at = new Date();
-                return res.writeHead(StatusCodes.OK).end(JSON.stringify(tasks));
+                //tasks[index].completed_at = new Date();
+                database.updateTaskCompleted("tasks", id);
+                return res
+                    .writeHead(StatusCodes.OK)
+                    .end(`Task finalizada!`);
             }
             return res
                 .writeHead(StatusCodes.BAD_REQUEST)
