@@ -113,12 +113,14 @@ export const routes = [
         method: "DELETE",
         path: buildRoutePath("/tasks/:id"),
         handler: (req, res) => {
-            const { id } = req.params;
-            const index = tasks.findIndex((task) => task.id === id);
+            const {id} = req.params;
+            //const index = tasks.findIndex((task) => task.id === id);
+            const index = database.selectById("tasks", id)
 
             if (index > -1) {
-                tasks.pop(index);
-                return res.writeHead(StatusCodes.OK).end("Task deletada com sucesso");
+                //tasks.pop(index);
+                database.delete("tasks", id);
+                return res.writeHead(StatusCodes.OK).end("Task deletada com sucesso!");
             }
             return res
                 .writeHead(StatusCodes.NOT_FOUND)
