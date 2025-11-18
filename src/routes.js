@@ -1,9 +1,10 @@
 import { buildRoutePath } from "./utils/build-route-path.js";
 import { randomUUID } from "node:crypto";
 import { StatusCodes } from "http-status-codes";
+import { Database } from "./database.js";
 
-let tasks = [];
-let tasksfiltered = [];
+const database = new Database();
+
 export const routes = [
     {
         method: "POST",
@@ -12,16 +13,18 @@ export const routes = [
             if (req.body) {
                 const { title, description } = req.body;
                 if (title && description) {
-                    tasks.push({
+                    const task = {
                         id: randomUUID(),
                         title,
                         description,
                         completed_at: null,
                         created_at: new Date(),
                         updated_at: new Date(),
-                    });
-                    console.log(tasks);
+                    }
+                    database.insert("tasks", task);
+                    console.log(task);
                     //tasks.push(task);
+
                     return res
                         .writeHead(StatusCodes.CREATED)
                         .end("Tarefa criada com sucesso!");
