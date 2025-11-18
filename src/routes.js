@@ -43,23 +43,25 @@ export const routes = [
         path: buildRoutePath("/tasks"),
         handler: (req, res) => {
             const { title, description } = req.query;
+
             if (title && description) {
-                tasksfiltered = tasks.filter(
-                    (task) => task.title === title && task.description === description
-                );
-                console.log(tasksfiltered);
+                const tasks = database.select("tasks", (title && description) ? {
+                    title,
+                    description
+                } : null);
                 return res
-                    .setHeader("Content-type", "aplication/json")
+                    .setHeader("Content-type", "application/json")
                     .writeHead(StatusCodes.OK)
-                    .end(JSON.stringify(tasksfiltered));
+                    .end(JSON.stringify(tasks));
             }
-            if ((title && !description) || (!title && description)) {
+            if (title && !description || !title && description) {
                 return res
                     .writeHead(StatusCodes.BAD_REQUEST) //bad request
                     .end("Por favor, insira title e description para pesquisar!");
             }
+            const tasks = database.select("tasks");
             return res.writeHead(StatusCodes.OK).end(JSON.stringify(tasks));
-        },
+        }
     },
     {
         method: "PUT",
