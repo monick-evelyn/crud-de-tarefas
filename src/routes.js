@@ -2,7 +2,6 @@ import { buildRoutePath } from "./utils/build-route-path.js";
 import { randomUUID } from "node:crypto";
 import { StatusCodes } from "http-status-codes";
 import { Database } from "./database.js";
-import { CLIENT_RENEG_WINDOW } from "node:tls";
 
 const database = new Database();
 
