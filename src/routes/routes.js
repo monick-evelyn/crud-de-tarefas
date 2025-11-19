@@ -1,7 +1,7 @@
-import { buildRoutePath } from "./utils/build-route-path.js";
+import { buildRoutePath } from "../utils/build-route-path.js";
 import { randomUUID } from "node:crypto";
 import { StatusCodes } from "http-status-codes";
-import { Database } from "./database.js";
+import { Database } from "../database/database.js";
 
 const database = new Database();
 
