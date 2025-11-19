@@ -9,7 +9,7 @@ export const routes = [
     {
         method: "POST",
         path: buildRoutePath("/tasks"),
-        handler: (req, res) => {
+        handler: async (req, res) => {
             if (req.body) {
                 const { title, description } = req.body;
                 if (title && description) {
@@ -21,7 +21,7 @@ export const routes = [
                         created_at: new Date(),
                         updated_at: new Date(),
                     }
-                    database.insert("tasks", task);
+                    await database.insert("tasks", task);
                     console.log(task);
                     //tasks.push(task);
 

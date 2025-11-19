@@ -1,5 +1,5 @@
 import http from 'node:http';
-import {routes} from './routes.js';
+import {routes} from './routes/routes.js';
 import {json} from './middlewares/json.js';
 import { extractQueryParams } from './utils/extract-query-params.js';
 import { StatusCodes } from 'http-status-codes';

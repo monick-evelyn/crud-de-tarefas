@@ -1,22 +1,27 @@
-import fs from 'node:fs/promises';
-import { title } from 'node:process';
+import {readFile, writeFile} from 'node:fs/promises';
+//import { title } from 'node:process';
 
-const databasePath = new URL('../db.json', import.meta.url);
+const databasePath = new URL('./db.json', import.meta.url);
 
 export class Database {
     #database = {};
 
     constructor(){
-        fs.readFile(databasePath, 'utf-8').then(data => {
-            this.#database = JSON.parse(data);
-        }).catch(() => {
-            this.#persist();
-        });
+        this.#loadDatabase();
     }
 
-    #persist() {
-        fs.writeFile(databasePath, JSON.stringify(this.#database, null, 2));
+    async #persist() {
+        await writeFile(databasePath, JSON.stringify(this.#database, null, 2));
     }
+
+    async #loadDatabase() {
+    try {
+      const data = await readFile(databasePath, { encoding: "utf-8" });
+      this.#database = JSON.parse(data);
+    } catch {
+      this.#persist();
+    }
+  }
 
     select (table, search) {
         let data = this.#database[table] ?? [];
@@ -31,25 +36,25 @@ export class Database {
         return data;
     }
 
-    insert (table, data) {
+    async insert (table, data) {
         if (Array.isArray(this.#database[table])){
             this.#database[table].push(data);
         } else {
             this.#database[table] = [data];
         }
-        this.#persist();
+        await this.#persist();
     }
     
-    delete (table, id) { 
+    async delete (table, id) { 
         const rowIndex = this.selectById(table, id); 
 
         if (rowIndex > -1) {
             this.#database[table].splice(rowIndex, 1); 
-            this.#persist(); 
+            await this.#persist(); 
         }
     }
 
-    update (table, id, data) { 
+    async update (table, id, data) { 
         const row = this.selectById(table, id);
 
         // Garantir que `data` seja um objeto. Se vier como string JSON, tentar parsear.
@@ -86,11 +91,11 @@ export class Database {
                 updated_at: new Date()
             };
 
-            this.#persist();
+            await this.#persist();
         }
     }
 
-    updateTaskCompleted (table, id) {
+    async updateTaskCompleted (table, id) {
         const indexRow = this.selectById(table, id);
 
         if (indexRow > -1) {
@@ -103,7 +108,7 @@ export class Database {
                 created_at: existing.created_at,
                 updated_at: existing.updated_at
             };
-            this.#persist();
+            await this.#persist();
         }
     }
 
