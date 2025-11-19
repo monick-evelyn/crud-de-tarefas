@@ -3,6 +3,8 @@ import fs from "node:fs";
 
 const filePath = new URL("../../data.csv", import.meta.url);
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const importCSV = async () => {
   //const records = [];
   const parser = fs
@@ -15,6 +17,12 @@ const importCSV = async () => {
   for await (let chunk of parser) {
     const [title, description] = chunk;
 
+    // mostrar que a stream está carregando (visual)
+    console.log('carregando linha', count, '...');
+
+    // pequena pausa para visualizar a stream sendo carregada
+    await sleep(500);
+
     console.log(title, description);
 
     if (count > 0) {
@@ -26,7 +34,7 @@ const importCSV = async () => {
     }
     count++;
   }
-};
+}
 
 (async () => {
   //const records = await importCSV();
