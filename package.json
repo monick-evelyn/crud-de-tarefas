@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/monick-evelyn/crud-de-tarefas#readme",
   "dependencies": {
+    "csv-parse": "^6.1.0",
     "http-status-codes": "^2.3.0"
   }
 }
